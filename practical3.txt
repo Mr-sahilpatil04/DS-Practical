@@ -1,0 +1,113 @@
+# Experiment No. 3
+# To sort First Year Students Percentage
+# using Selection Sort and Bubble Sort
+
+# Selection Sort Function
+def selection_sort(arr):
+    n = len(arr)
+
+    for i in range(n - 1):
+        min_index = i
+
+        for j in range(i + 1, n):
+            if arr[j] < arr[min_index]:
+                min_index = j
+
+        if min_index != i:
+            arr[i], arr[min_index] = arr[min_index], arr[i]
+
+    return arr
+
+
+# Bubble Sort Function
+def bubble_sort(arr):
+    n = len(arr)
+
+    for i in range(n - 1):
+        swapped = False
+
+        for j in range(n - i - 1):
+            if arr[j] > arr[j + 1]:
+                arr[j], arr[j + 1] = arr[j + 1], arr[j]
+                swapped = True
+
+        # Stop if array is already sorted
+        if swapped == False:
+            break
+
+    return arr
+
+
+# Main Program
+
+# Input number of students
+n = int(input("Enter number of students: "))
+
+# Store student percentages
+percentages = []
+
+for i in range(n):
+    percentage = float(
+        input(f"Enter percentage of student {i + 1}: ")
+    )
+    percentages.append(percentage)
+
+# Display original array
+print("\nOriginal Percentages:")
+print(percentages)
+
+
+# Selection Sort
+selection_array = percentages.copy()
+selection_sort(selection_array)
+
+print("\nSelection Sort:")
+print(selection_array)
+
+
+# Bubble Sort
+bubble_array = percentages.copy()
+bubble_sort(bubble_array)
+
+print("\nBubble Sort:")
+print(bubble_array)
+
+
+# Display Top 5 Scores
+print("\nTop 5 Highest Scores:")
+
+top_five = bubble_array[-5:][::-1]
+
+for i, score in enumerate(top_five, 1):
+    print(f"{i}. {score:.2f}%")
+
+Output:- 
+
+Enter number of students: 8
+
+Enter percentage of student 1: 75.50
+Enter percentage of student 2: 88.20
+Enter percentage of student 3: 64.50
+Enter percentage of student 4: 91.30
+Enter percentage of student 5: 79.80
+Enter percentage of student 6: 95.60
+Enter percentage of student 7: 82.40
+Enter percentage of student 8: 69.70
+
+Original Percentages:
+[75.5, 88.2, 64.5, 91.3, 79.8, 95.6, 82.4, 69.7]
+
+Selection Sort:
+[64.5, 69.7, 75.5, 79.8, 82.4, 88.2, 91.3, 95.6]
+
+Bubble Sort:
+[64.5, 69.7, 75.5, 79.8, 82.4, 88.2, 91.3, 95.6]
+
+Top 5 Highest Scores:
+1. 95.60%
+2. 91.30%
+3. 88.20%
+4. 82.40%
+5. 79.80%
+=== Code Execution Successful ===
+

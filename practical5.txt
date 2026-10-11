@@ -1,0 +1,611 @@
+START_TIME = 9
+END_TIME = 19
+
+
+# Node of Doubly Linked List
+class Node:
+    def __init__(self, appointment_id, name, time):
+        self.id = appointment_id
+        self.name = name
+        self.time = time
+        self.prev = None
+        self.next = None
+
+
+class AppointmentList:
+    def __init__(self):
+        self.head = None
+        self.next_id = 1
+
+    # Check whether a time slot is available
+    def is_available(self, time):
+        current = self.head
+
+        while current:
+            if current.time == time:
+                return False
+            current = current.next
+
+        return True
+
+    # A) Display free slots
+    def display_free_slots(self):
+        print("\n----- FREE SLOTS -----")
+
+        found = False
+
+        for time in range(START_TIME, END_TIME + 1):
+            if self.is_available(time):
+                print(f"{time:02d}:00 - {time + 1:02d}:00")
+                found = True
+
+        if not found:
+            print("No free slots available.")
+
+    # B) Book appointment
+    def book_appointment(self):
+        name = input("Enter patient name: ")
+
+        try:
+            time = int(input(
+                f"Enter appointment hour ({START_TIME}-{END_TIME}): "
+            ))
+        except ValueError:
+            print("Invalid input! Enter a number.")
+            return
+
+        # Check time bounds
+        if time < START_TIME or time > END_TIME:
+            print(
+                f"Invalid time! Please select between "
+                f"{START_TIME}:00 and {END_TIME}:00."
+            )
+            return
+
+        # Check availability
+        if not self.is_available(time):
+            print(f"Sorry! {time:02d}:00 slot is already booked.")
+            return
+
+        new_node = Node(self.next_id, name, time)
+        self.next_id += 1
+
+        # Insert node at the end
+        if self.head is None:
+            self.head = new_node
+        else:
+            current = self.head
+
+            while current.next:
+                current = current.next
+
+            current.next = new_node
+            new_node.prev = current
+
+        print("Appointment booked successfully!")
+        print(f"Appointment ID: {new_node.id}")
+
+    # Display booked appointments
+    def display_appointments(self):
+        print("\n----- BOOKED APPOINTMENTS -----")
+
+        if self.head is None:
+            print("No appointments booked.")
+            return
+
+        current = self.head
+
+        while current:
+            print(
+                f"ID: {current.id} | "
+                f"Name: {current.name} | "
+                f"Time: {current.time:02d}:00"
+            )
+            current = current.next
+
+    # C & E) Sort list based on time using pointer manipulation
+    def sort_by_time(self):
+        if self.head is None or self.head.next is None:
+            print("List is already sorted.")
+            return
+
+        sorted_head = None
+        current = self.head
+
+        while current:
+            next_node = current.next
+
+            # Detach current node
+            current.prev = None
+            current.next = None
+
+            # Insert as first node
+            if sorted_head is None:
+                sorted_head = current
+
+            # Insert before first node
+            elif current.time < sorted_head.time:
+                current.next = sorted_head
+                sorted_head.prev = current
+                sorted_head = current
+
+            # Insert at appropriate position
+            else:
+                temp = sorted_head
+
+                while (
+                    temp.next is not None
+                    and temp.next.time <= current.time
+                ):
+                    temp = temp.next
+
+                current.next = temp.next
+
+                if temp.next is not None:
+                    temp.next.prev = current
+
+                temp.next = current
+                current.prev = temp
+
+            current = next_node
+
+        self.head = sorted_head
+
+        print("Appointments sorted by time successfully.")
+        print("Sorting was performed using pointer manipulation.")
+
+    # D) Cancel appointment
+    def cancel_appointment(self):
+        try:
+            appointment_id = int(input("Enter appointment ID: "))
+            time = int(input("Enter appointment time for verification: "))
+        except ValueError:
+            print("Invalid input!")
+            return
+
+        # Check time bounds
+        if time < START_TIME or time > END_TIME:
+            print(
+                f"Invalid time! Time must be between "
+                f"{START_TIME}:00 and {END_TIME}:00."
+            )
+            return
+
+        current = self.head
+
+        # Search for appointment
+        while current:
+            if current.id == appointment_id:
+                breakv
+            current = current.next
+
+        # Check validity
+        if current is None:
+            print("Invalid appointment ID! Appointment not found.")
+            return
+
+        # Check time
+        if current.time != time:
+            print("Appointment time does not match.")
+            return
+
+        # Check availability / existence
+        if not self.is_available(time):
+            # The slot is occupied by this appointment,
+            # so cancellation is possible.
+            pass
+
+        # Remove node using prev and next pointers
+        if current.prev is not None:
+            current.prev.next = current.next
+        else:
+            # Removing the first node
+            self.head = current.next
+
+        if current.next is not None:
+            current.next.prev = current.prev
+
+        print(
+            f"Appointment ID {current.id} "
+            f"for {current.name} at {current.time:02d}:00 "
+            f"cancelled successfully."
+        )
+
+        # Disconnect node
+        current.prev = None
+        current.next = None
+
+    # Display list in forward direction
+    def display_forward(self):
+        print("\nForward List:")
+
+        current = self.head
+
+        while current:
+            print(
+                f"[{current.id}, {current.name}, "
+                f"{current.time:02d}:00]",
+                end=" <-> "
+            )
+            current = current.next
+
+        print("None")
+
+    # Display list in reverse direction
+    def display_backward(self):
+        if self.head is None:
+            print("List is empty.")
+            return
+
+        current = self.head
+
+        # Move to last node
+        while current.next:
+            current = current.next
+
+        print("\nBackward List:")
+
+        while current:
+            print(
+                f"[{current.id}, {current.name}, "
+                f"{current.time:02d}:00]",
+                end=" <-> "
+            )
+            current = current.prev
+
+        print("None")
+
+
+# Main program
+def main():
+    appointments = AppointmentList()
+
+    while True:
+        print("\n========== APPOINTMENT SYSTEM ==========")
+        print("1. Display Free Slots")
+        print("2. Book Appointment")
+        print("3. Display Appointments")
+        print("4. Sort List Based on Time")
+        print("5. Cancel Appointment")
+        print("6. Display Forward List")
+        print("7. Display Backward List")
+        print("8. Exit")
+        print("========================================")
+
+        try:
+            choice = int(input("Enter your choice: "))
+        except ValueError:
+            print("Please enter a valid number.")
+            continue
+
+        if choice == 1:
+            appointments.display_free_slots()
+
+        elif choice == 2:
+            appointments.book_appointment()
+
+        elif choice == 3:
+            appointments.display_appointments()
+
+        elif choice == 4:
+            appointments.sort_by_time()
+
+        elif choice == 5:
+            appointments.cancel_appointment()
+
+        elif choice == 6:
+            appointments.display_forward()
+
+        elif choice == 7:
+            appointments.display_backward()
+
+        elif choice == 8:
+            print("Program terminated.")
+            break
+
+        else:
+            print("Invalid choice! Please try again.")
+
+
+# Run program
+if __name__ == "__main__":
+    main()
+
+START_TIME = 9
+END_TIME = 19
+
+class Node:
+    def __init__(self, appointment_id, name, time):
+        self.id = appointment_id
+        self.name = name
+        self.time = time
+        self.prev = None
+        self.next = None
+
+
+class AppointmentList:
+    def __init__(self):
+        self.head = None
+        self.next_id = 1
+
+    
+    def is_available(self, time):
+        current = self.head
+
+        while current:
+            if current.time == time:
+                return False
+            current = current.next
+
+        return True
+
+    
+    def display_free_slots(self):
+        print("\n----- FREE SLOTS -----")
+
+        found = False
+
+        for time in range(START_TIME, END_TIME + 1):
+            if self.is_available(time):
+                print(f"{time:02d}:00 - {time + 1:02d}:00")
+                found = True
+
+        if not found:
+            print("No free slots available.")
+
+    
+    def book_appointment(self):
+        name = input("Enter patient name: ")
+
+        try:
+            time = int(input(
+                f"Enter appointment hour ({START_TIME}-{END_TIME}): "
+            ))
+        except ValueError:
+            print("Invalid input! Enter a number.")
+            return
+
+        if time < START_TIME or time > END_TIME:
+            print(
+                f"Invalid time! Please select between "
+                f"{START_TIME}:00 and {END_TIME}:00."
+            )
+            return
+
+        
+        if not self.is_available(time):
+            print(f"Sorry! {time:02d}:00 slot is already booked.")
+            return
+
+        new_node = Node(self.next_id, name, time)
+        self.next_id += 1
+
+        
+        if self.head is None:
+            self.head = new_node
+        else:
+            current = self.head
+
+            while current.next:
+                current = current.next
+
+            current.next = new_node
+            new_node.prev = current
+
+        print("Appointment booked successfully!")
+        print(f"Appointment ID: {new_node.id}")
+
+    def display_appointments(self):
+        print("\n----- BOOKED APPOINTMENTS -----")
+
+        if self.head is None:
+            print("No appointments booked.")
+            return
+
+        current = self.head
+
+        while current:
+            print(
+                f"ID: {current.id} | "
+                f"Name: {current.name} | "
+                f"Time: {current.time:02d}:00"
+            )
+            current = current.next
+
+    
+    def sort_by_time(self):
+        if self.head is None or self.head.next is None:
+            print("List is already sorted.")
+            return
+
+        sorted_head = None
+        current = self.head
+
+        while current:
+            next_node = current.next
+
+            current.prev = None
+            current.next = None
+
+            if sorted_head is None:
+                sorted_head = current
+
+          
+            elif current.time < sorted_head.time:
+                current.next = sorted_head
+                sorted_head.prev = current
+                sorted_head = current
+
+            
+            else:
+                temp = sorted_head
+
+                while (
+                    temp.next is not None
+                    and temp.next.time <= current.time
+                ):
+                    temp = temp.next
+
+                current.next = temp.next
+
+                if temp.next is not None:
+                    temp.next.prev = current
+
+                temp.next = current
+                current.prev = temp
+
+            current = next_node
+
+        self.head = sorted_head
+
+        print("Appointments sorted by time successfully.")
+        print("Sorting was performed using pointer manipulation.")
+
+    def cancel_appointment(self):
+        try:
+            appointment_id = int(input("Enter appointment ID: "))
+            time = int(input("Enter appointment time for verification: "))
+        except ValueError:
+            print("Invalid input!")
+            return
+
+        
+        if time < START_TIME or time > END_TIME:
+            print(
+                f"Invalid time! Time must be between "
+                f"{START_TIME}:00 and {END_TIME}:00."
+            )
+            return
+
+        current = self.head
+
+        
+        while current:
+            if current.id == appointment_id:
+                breakv
+            current = current.next
+
+        
+        if current is None:
+            print("Invalid appointment ID! Appointment not found.")
+            return
+
+        
+        if current.time != time:
+            print("Appointment time does not match.")
+            return
+
+        
+        if not self.is_available(time):
+            pass
+
+    
+        if current.prev is not None:
+            current.prev.next = current.next
+        else:
+            self.head = current.next
+
+        if current.next is not None:
+            current.next.prev = current.prev
+
+        print(
+            f"Appointment ID {current.id} "
+            f"for {current.name} at {current.time:02d}:00 "
+            f"cancelled successfully."
+        )
+
+        
+        current.prev = None
+        current.next = None
+
+    
+    def display_forward(self):
+        print("\nForward List:")
+
+        current = self.head
+
+        while current:
+            print(
+                f"[{current.id}, {current.name}, "
+                f"{current.time:02d}:00]",
+                end=" <-> "
+            )
+            current = current.next
+
+        print("None")
+
+    def display_backward(self):
+        if self.head is None:
+            print("List is empty.")
+            return
+
+        current = self.head
+
+        
+        while current.next:
+            current = current.next
+
+        print("\nBackward List:")
+
+        while current:
+            print(
+                f"[{current.id}, {current.name}, "
+                f"{current.time:02d}:00]",
+                end=" <-> "
+            )
+            current = current.prev
+
+        print("None")
+
+
+def main():
+    appointments = AppointmentList()
+
+    while True:
+        print("\n========== APPOINTMENT SYSTEM ==========")
+        print("1. Display Free Slots")
+        print("2. Book Appointment")
+        print("3. Display Appointments")
+        print("4. Sort List Based on Time")
+        print("5. Cancel Appointment")
+        print("6. Display Forward List")
+        print("7. Display Backward List")
+        print("8. Exit")
+        print("========================================")
+
+        try:
+            choice = int(input("Enter your choice: "))
+        except ValueError:
+            print("Please enter a valid number.")
+            continue
+
+        if choice == 1:
+            appointments.display_free_slots()
+
+        elif choice == 2:
+            appointments.book_appointment()
+
+        elif choice == 3:
+            appointments.display_appointments()
+
+        elif choice == 4:
+            appointments.sort_by_time()
+
+        elif choice == 5:
+            appointments.cancel_appointment()
+
+        elif choice == 6:
+            appointments.display_forward()
+
+        elif choice == 7:
+            appointments.display_backward()
+
+        elif choice == 8:
+            print("Program terminated.")
+            break
+
+        else:
+            print("Invalid choice! Please try again.")
+
+if __name__ == "__main__":
+    main()

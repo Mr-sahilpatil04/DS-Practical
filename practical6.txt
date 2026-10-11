@@ -1,0 +1,59 @@
+class node:
+    def __init__(self, data):
+        self.data = data
+        self.next = None
+
+class Stack:
+    def __init__(self):
+        self.top = None
+
+    def push(self,data):
+        new_node = node(data)
+        new_node.next = self.top
+        self.top = new_node
+
+    def pop(self):
+        if self.is_empty():
+            raise Exception("Stack in flow")
+        data = self.top.data
+        self.top = self.top.next
+        return data
+
+    def peek(self):
+        if self.is_empty():
+            raise Exception("Stack is empty")
+        return self.top.data
+
+    def is_empty(self):
+        return self.top is None
+
+def evaluate_postfix(expression):
+    stack = Stack()
+    tokens = expression.split()
+    for token in tokens:
+
+        if token.strip('-').isdigit():
+            stack.push(int(token))
+
+        elif token in ['+','-','*','/']:
+            operand1 = stack.pop()
+            operand2 = stack.pop()
+            if token == '+':
+                result = operand1 + operand2
+            elif token == '-':
+                result = operand1 - operand2
+            elif token == '*':
+                result = operand1 * operand2
+            elif token == '/':
+                result = operand1 / operand2
+            stack.push(result)
+        else:
+           raise ValueError("Invalid expression")
+    return stack.pop()
+
+expression = input("Enter the expression: ")
+try:
+    result = evaluate_postfix(expression)
+    print("Result=",result)
+except Exception as e:
+    print("Error:", e)

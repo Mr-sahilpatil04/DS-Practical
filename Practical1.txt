@@ -1,0 +1,97 @@
+# Experiment No. 1
+# To sort First Year Students Percentage using
+# Selection Sort and Bubble Sort in Python
+
+# Selection Sort Function
+def selection_sort(arr):
+    n = len(arr)
+
+    for i in range(n - 1):
+        min_index = i
+
+        for j in range(i + 1, n):
+            if arr[j] < arr[min_index]:
+                min_index = j
+
+        if min_index != i:
+            arr[i], arr[min_index] = arr[min_index], arr[i]
+
+    return arr
+
+
+# Bubble Sort Function
+def bubble_sort(arr):
+    n = len(arr)
+
+    for i in range(n - 1):
+        swapped = False
+
+        for j in range(n - i - 1):
+            if arr[j] > arr[j + 1]:
+                arr[j], arr[j + 1] = arr[j + 1], arr[j]
+                swapped = True
+
+        # If no swapping occurs, array is already sorted
+        if not swapped:
+            break
+
+    return arr
+
+
+# Main Program
+
+# Input number of students
+n = int(input("Enter number of students: "))
+
+# Store percentages
+percentages = []
+
+for i in range(n):
+    percentage = float(input(f"Enter percentage of student {i + 1}: "))
+    percentages.append(percentage)
+
+print("\nOriginal Percentages:")
+print(percentages)
+
+
+# Selection Sort
+selection_array = percentages.copy()
+selection_sort(selection_array)
+
+print("\nAfter Selection Sort:")
+print(selection_array)
+
+
+# Bubble Sort
+bubble_array = percentages.copy()
+bubble_sort(bubble_array)
+
+print("\nAfter Bubble Sort:")
+print(bubble_array)
+
+
+# Display Top 5 Scores
+top_five = bubble_array[-5:][::-1]
+
+print("\nTop 5 Highest Percentages:")
+
+for i, score in enumerate(top_five, 1):
+    print(f"{i}. {score}%")
+
+Output:- 
+Original Percentages:
+[75.5, 88.2, 64.5, 91.3, 79.8, 95.6, 82.4, 69.7]
+
+After Selection Sort:
+[64.5, 69.7, 75.5, 79.8, 82.4, 88.2, 91.3, 95.6]
+
+After Bubble Sort:
+[64.5, 69.7, 75.5, 79.8, 82.4, 88.2, 91.3, 95.6]
+
+Top 5 Highest Percentages:
+1. 95.6%
+2. 91.3%
+3. 88.2%
+4. 82.4%
+5. 79.8%
+=== Code Execution Successful ===
